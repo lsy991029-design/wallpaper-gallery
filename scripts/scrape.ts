@@ -23,7 +23,6 @@ const SEARCHES = [
   { term: 'animals wildlife', category: '动物', tags: ['动物', '自然'] },
   { term: 'flowers plants garden', category: '花卉', tags: ['花卉', '植物'] },
   { term: 'minimal simple clean', category: '极简', tags: ['极简', '简约'] },
-  { term: 'anime illustration', category: '动漫', tags: ['动漫', '二次元'] },
   { term: 'mountain forest trees', category: '风景', tags: ['风景', '自然', '山'] },
   { term: 'sunset sunrise sky', category: '风景', tags: ['风景', '日落'] },
   { term: 'car supercar vehicle', category: '汽车', tags: ['汽车', '科技'] },
