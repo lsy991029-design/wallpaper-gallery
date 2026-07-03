@@ -1,195 +1,173 @@
 /**
- * Wallpaper scraper using Playwright
- *
+ * Pexels wallpaper scraper using official API — no browser, no Cloudflare, reliable.
  * Usage: npx tsx scripts/scrape.ts
- *
- * Scrapes wallpaper listing pages to collect image URLs,
- * then downloads full-resolution images and generates thumbnails.
- * Outputs wallpapers.json metadata file.
  */
 
-import { chromium } from 'playwright'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import sources from './sources'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
-const imagesDir = path.join(projectRoot, 'public', 'images')
-const fullDir = path.join(imagesDir, 'full')
-const thumbDir = path.join(imagesDir, 'thumbnails')
 
-// Ensure directories exist
-fs.mkdirSync(fullDir, { recursive: true })
-fs.mkdirSync(thumbDir, { recursive: true })
+const API_KEY = 'xui3ElDCUuaxDC4nKWfZiVjurBuhZkvFwkLkJ5tSi9eI5mXVEwhgcLaA'
+const BASE = 'https://api.pexels.com/v1'
 
-interface ScrapedWallpaper {
-  id: string
-  title: string
-  thumbnailUrl: string
-  fullUrl: string
-  resolution: { width: number; height: number }
-  source: string
-  sourceUrl: string
-}
+// Search config: English term → Chinese category + tags
+const SEARCHES = [
+  { term: 'nature landscape 4k', category: '风景', tags: ['风景', '自然'] },
+  { term: 'city night urban', category: '城市', tags: ['城市', '夜景'] },
+  { term: 'abstract art', category: '抽象', tags: ['抽象', '艺术'] },
+  { term: 'space universe stars', category: '宇宙', tags: ['宇宙', '星空'] },
+  { term: 'ocean sea waves', category: '海洋', tags: ['海洋', '自然'] },
+  { term: 'animals wildlife', category: '动物', tags: ['动物', '自然'] },
+  { term: 'flowers plants garden', category: '花卉', tags: ['花卉', '植物'] },
+  { term: 'minimal simple clean', category: '极简', tags: ['极简', '简约'] },
+  { term: 'anime illustration', category: '动漫', tags: ['动漫', '二次元'] },
+  { term: 'mountain forest trees', category: '风景', tags: ['风景', '自然', '山'] },
+  { term: 'sunset sunrise sky', category: '风景', tags: ['风景', '日落'] },
+  { term: 'car supercar vehicle', category: '汽车', tags: ['汽车', '科技'] },
+  { term: 'technology digital tech', category: '科技', tags: ['科技', '数码'] },
+  { term: 'architecture building design', category: '建筑', tags: ['建筑', '城市'] },
+]
 
-async function scrapeWallhaven(page: any, source: (typeof sources)[0]): Promise<string[]> {
-  const imageUrls: string[] = []
-
-  for (let p = 1; p <= source.pages; p++) {
-    const url = source.baseUrl + p
-    console.log(`  Fetching page ${p}: ${url}`)
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 })
-
-    // Scroll to load lazy images
-    await page.evaluate(async () => {
-      await new Promise<void>((resolve) => {
-        let totalHeight = 0
-        const distance = 400
-        const timer = setInterval(() => {
-          window.scrollBy(0, distance)
-          totalHeight += distance
-          if (totalHeight >= document.body.scrollHeight) {
-            clearInterval(timer)
-            resolve()
-          }
-        }, 200)
-      })
-    })
-
-    // Extract thumbnail links from the listing page
-    const links = await page.$$eval('a.preview', (anchors: any[]) =>
-      anchors.map((a) => a.href).filter(Boolean),
-    )
-
-    console.log(`  Found ${links.length} wallpaper links on page ${p}`)
-
-    // Visit each detail page to get full-res image URL
-    for (const detailUrl of links) {
-      try {
-        await page.goto(detailUrl, { waitUntil: 'networkidle', timeout: 15000 })
-        const fullImgUrl = await page.$eval('img#wallpaper', (img: any) => img.src)
-        if (fullImgUrl) {
-          imageUrls.push(fullImgUrl)
-          console.log(`    ✓ ${fullImgUrl}`)
-        }
-      } catch (err) {
-        console.warn(`    ✗ Failed to get image from ${detailUrl}:`, (err as Error).message)
-      }
-
-      // Rate limiting
-      await page.waitForTimeout(1000)
-    }
+interface PexelsPhoto {
+  id: number
+  width: number
+  height: number
+  url: string
+  photographer: string
+  photographer_url: string
+  src: {
+    original: string
+    large2x: string
+    large: string
+    medium: string
+    small: string
+    tiny: string
   }
-
-  return imageUrls
+  alt: string
 }
 
-async function downloadImage(url: string, destPath: string): Promise<void> {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`HTTP ${response.status}`)
-  const buffer = Buffer.from(await response.arrayBuffer())
-  fs.writeFileSync(destPath, buffer)
+interface SearchResponse {
+  photos: PexelsPhoto[]
+  total_results: number
+  page: number
+  per_page: number
+}
+
+async function searchPhotos(term: string, perPage = 15): Promise<PexelsPhoto[]> {
+  const url = `${BASE}/search?query=${encodeURIComponent(term)}&per_page=${perPage}&size=large`
+  const res = await fetch(url, {
+    headers: { Authorization: API_KEY },
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`API ${res.status}: ${text}`)
+  }
+  const data: SearchResponse = await res.json()
+  return data.photos
+}
+
+function buildThumbUrl(photo: PexelsPhoto): string {
+  return `https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=400`
+}
+
+function buildFullUrl(photo: PexelsPhoto): string {
+  return `https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=3840`
+}
+
+function cleanTitle(alt: string, category: string): string {
+  let cleaned = alt
+    .replace(/免费\s*/g, '')
+    .replace(/的免费素材图片/g, '')
+    .replace(/素材图片/g, '')
+    .replace(/免费素材/g, '')
+    .replace(/免费图片/g, '')
+    .replace(/stock photo/gi, '')
+    .replace(/free stock/gi, '')
+    .replace(/pexels/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[，,]\s*$/, '')
+    .trim()
+
+  if (!cleaned || cleaned.length < 3) {
+    cleaned = `${category}壁纸`
+  }
+  if (cleaned.length > 60) {
+    cleaned = cleaned.slice(0, 57) + '...'
+  }
+  return cleaned
 }
 
 async function main() {
-  console.log('🚀 Starting wallpaper scraper...\n')
+  console.log('Pexels API scraper\n')
 
-  const browser = await chromium.launch({ headless: true })
-  const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-  })
-  const page = await context.newPage()
+  const seen = new Set<number>()
+  const wallpapers: any[] = []
+  let idx = 1
 
-  const wallpapers: ScrapedWallpaper[] = []
-  let index = 1
+  for (const { term, category, tags } of SEARCHES) {
+    if (wallpapers.length >= 110) break
 
-  for (const source of sources) {
-    console.log(`📡 Scraping ${source.label}...`)
+    console.log(`Search: "${term}" → ${category}`)
 
+    let photos: PexelsPhoto[]
     try {
-      const imageUrls = await scrapeWallhaven(page, source)
-
-      for (const imageUrl of imageUrls) {
-        const id = `wp_${String(index).padStart(4, '0')}`
-        const ext = path.extname(new URL(imageUrl).pathname).split('?')[0] || '.jpg'
-
-        const fullPath = path.join(fullDir, `${id}${ext}`)
-        const thumbPath = path.join(thumbDir, `${id}${ext}`)
-
-        try {
-          // Download full image
-          console.log(`  ⬇ Downloading ${imageUrl}`)
-          await downloadImage(imageUrl, fullPath)
-
-          // Generate thumbnail (400px wide) using sharp
-          try {
-            const sharp = (await import('sharp')).default
-            await sharp(fullPath)
-              .resize(400, undefined, { fit: 'inside' })
-              .jpeg({ quality: 80 })
-              .toFile(thumbPath)
-          } catch {
-            // If sharp fails, just copy the file
-            fs.copyFileSync(fullPath, thumbPath)
-          }
-
-          const wall: ScrapedWallpaper = {
-            id,
-            title: id, // Will be manually edited later
-            thumbnailUrl: `/images/thumbnails/${id}${ext}`,
-            fullUrl: `/images/full/${id}${ext}`,
-            resolution: { width: 0, height: 0 },
-            source: source.name,
-            sourceUrl: imageUrl,
-          }
-
-          wallpapers.push(wall)
-          index++
-          console.log(`    ✓ Saved as ${id}${ext}`)
-        } catch (err) {
-          console.warn(`    ✗ Failed to download ${imageUrl}:`, (err as Error).message)
-        }
-
-        await page.waitForTimeout(500)
-      }
-    } catch (err) {
-      console.error(`  ✗ Failed to scrape ${source.label}:`, (err as Error).message)
+      photos = await searchPhotos(term, 12)
+    } catch (e: any) {
+      console.log(`  error: ${e.message}`)
+      continue
     }
+
+    let added = 0
+    for (const photo of photos) {
+      if (seen.has(photo.id)) continue
+      seen.add(photo.id)
+
+      wallpapers.push({
+        id: `wp_${String(idx++).padStart(3, '0')}`,
+        title: cleanTitle(photo.alt || '', category),
+        tags,
+        category,
+        resolution: { width: photo.width, height: photo.height },
+        aspectRatio: '16:9',
+        fileSize: 0,
+        format: 'jpeg',
+        source: 'Pexels',
+        sourceUrl: photo.url,
+        thumbnailUrl: buildThumbUrl(photo),
+        fullUrl: buildFullUrl(photo),
+        dateAdded: new Date().toISOString().split('T')[0],
+        downloads: 0,
+        colorHex: '#333333',
+      })
+      added++
+    }
+
+    console.log(`  added ${added}, total: ${wallpapers.length}\n`)
+    // Rate limit: 200 req/hour. Be gentle.
+    await new Promise(r => setTimeout(r, 1000))
   }
 
-  await browser.close()
+  const output = wallpapers.slice(0, 110)
+  fs.writeFileSync(
+    path.join(projectRoot, 'src', 'data', 'wallpapers.json'),
+    JSON.stringify(output, null, 2),
+  )
+  console.log(`Done: ${output.length} wallpapers → src/data/wallpapers.json`)
 
-  // Generate wallpapers.json
-  const dataPath = path.join(projectRoot, 'src', 'data', 'wallpapers.template.json')
-  const out: any[] = wallpapers.map((w) => ({
-    id: w.id,
-    title: '',
-    tags: [],
-    category: '',
-    resolution: w.resolution,
-    aspectRatio: '',
-    fileSize: 0,
-    format: path.extname(w.fullUrl).replace('.', ''),
-    source: w.source,
-    sourceUrl: w.sourceUrl,
-    thumbnailUrl: w.thumbnailUrl,
-    fullUrl: w.fullUrl,
-    dateAdded: new Date().toISOString().split('T')[0],
-    downloads: 0,
-    colorHex: '#333333',
-  }))
-
-  fs.writeFileSync(dataPath, JSON.stringify(out, null, 2))
-  console.log(`\n✅ Done! Scraped ${wallpapers.length} wallpapers.`)
-  console.log(`📄 Template data written to: ${dataPath}`)
-  console.log('📝 Next: edit the template to add Chinese titles, tags, and categories,')
-  console.log('   then copy it over src/data/wallpapers.json')
+  const counts: Record<string, number> = {}
+  for (const w of output) {
+    counts[w.category] = (counts[w.category] || 0) + 1
+  }
+  console.log('\nCategory breakdown:')
+  for (const [cat, n] of Object.entries(counts)) {
+    console.log(`  ${cat}: ${n}`)
+  }
 }
 
-main().catch((err) => {
-  console.error('Scraper failed:', err)
+main().catch(e => {
+  console.error(e)
   process.exit(1)
 })
