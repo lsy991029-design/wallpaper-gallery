@@ -51,34 +51,33 @@ export default function GalleryPage() {
         />
       </div>
 
-      <p className="mb-4 text-sm text-gray-400">
-        共 {wallpapers.length} 张壁纸
-        {(query || activeTag) && '（已筛选）'}
-      </p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-gray-400">
+          共 {wallpapers.length} 张壁纸
+          {(query || activeTag) && '（已筛选）'}
+        </p>
 
-      {/* Healing mode toggle */}
-      <div className="mb-4 flex items-center gap-3">
+        {/* Healing mode toggle */}
         <button
           onClick={() => setHealingMode(!healingMode)}
-          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
             healingMode
-              ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/50'
-              : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+              ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
+              : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
           }`}
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          治愈模式
-          {healingMode && (
-            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] text-black font-bold">ON</span>
-          )}
+          {healingMode ? '治愈模式 ON' : '治愈模式'}
         </button>
-        {healingMode && (
-          <span className="text-xs text-amber-400/70">柔和暖调 · 低饱和度 · 胶片质感</span>
-        )}
       </div>
+
+      {/* Healing mode active hint */}
+      {healingMode && (
+        <p className="mb-4 text-xs text-amber-400/70 -mt-2">柔和暖调 · 低饱和度 · 胶片质感</p>
+      )}
 
       <InfiniteGallery
         wallpapers={wallpapers}
