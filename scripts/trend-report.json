@@ -1,0 +1,332 @@
+{
+  "date": "2026-07-09",
+  "source": "Pexels API",
+  "totalCategories": 38,
+  "top20": [
+    {
+      "rank": 1,
+      "name": "自然风景",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "自然"
+      ]
+    },
+    {
+      "rank": 2,
+      "name": "山湖倒影",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "山",
+        "湖"
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "日落黄昏",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "日落"
+      ]
+    },
+    {
+      "rank": 4,
+      "name": "极光星空",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "宇宙",
+        "极光"
+      ]
+    },
+    {
+      "rank": 5,
+      "name": "热带海滩",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "海洋",
+        "海滩"
+      ]
+    },
+    {
+      "rank": 6,
+      "name": "森林小径",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "森林"
+      ]
+    },
+    {
+      "rank": 7,
+      "name": "沙漠风光",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "沙漠"
+      ]
+    },
+    {
+      "rank": 8,
+      "name": "雪景冰山",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "风景",
+        "雪景"
+      ]
+    },
+    {
+      "rank": 9,
+      "name": "樱花花海",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "花卉",
+        "樱花"
+      ]
+    },
+    {
+      "rank": 10,
+      "name": "城市夜景",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "城市",
+        "夜景"
+      ]
+    },
+    {
+      "rank": 11,
+      "name": "赛博朋克",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "城市",
+        "赛博朋克"
+      ]
+    },
+    {
+      "rank": 12,
+      "name": "现代建筑",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "建筑",
+        "现代"
+      ]
+    },
+    {
+      "rank": 13,
+      "name": "街头摄影",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "城市",
+        "街拍"
+      ]
+    },
+    {
+      "rank": 14,
+      "name": "古典建筑",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "建筑",
+        "古典"
+      ]
+    },
+    {
+      "rank": 15,
+      "name": "橘猫萌宠",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "动物",
+        "猫"
+      ]
+    },
+    {
+      "rank": 16,
+      "name": "小狗萌宠",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "动物",
+        "狗"
+      ]
+    },
+    {
+      "rank": 17,
+      "name": "野生动物",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "动物",
+        "野生"
+      ]
+    },
+    {
+      "rank": 18,
+      "name": "海洋生物",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "动物",
+        "海洋"
+      ]
+    },
+    {
+      "rank": 19,
+      "name": "抽象艺术",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "抽象",
+        "艺术"
+      ]
+    },
+    {
+      "rank": 20,
+      "name": "几何图案",
+      "totalResults": 8000,
+      "popularity": "流行",
+      "tags": [
+        "抽象",
+        "几何"
+      ]
+    }
+  ],
+  "categorySummary": [
+    {
+      "tag": "风景",
+      "avgResults": 7994,
+      "subCategories": [
+        "自然风景",
+        "山湖倒影",
+        "日落黄昏",
+        "森林小径",
+        "沙漠风光",
+        "雪景冰山",
+        "瀑布溪流"
+      ]
+    },
+    {
+      "tag": "抽象",
+      "avgResults": 8000,
+      "subCategories": [
+        "抽象艺术",
+        "几何图案",
+        "渐变色彩",
+        "液态大理石",
+        "像素艺术"
+      ]
+    },
+    {
+      "tag": "动物",
+      "avgResults": 6876,
+      "subCategories": [
+        "橘猫萌宠",
+        "小狗萌宠",
+        "野生动物",
+        "海洋生物",
+        "大熊猫"
+      ]
+    },
+    {
+      "tag": "极简",
+      "avgResults": 8000,
+      "subCategories": [
+        "极简美学",
+        "暗黑模式",
+        "莫兰迪色",
+        "留白设计"
+      ]
+    },
+    {
+      "tag": "城市",
+      "avgResults": 8000,
+      "subCategories": [
+        "城市夜景",
+        "赛博朋克",
+        "街头摄影"
+      ]
+    },
+    {
+      "tag": "生活",
+      "avgResults": 8000,
+      "subCategories": [
+        "咖啡时光",
+        "舒适家居",
+        "读书时光"
+      ]
+    },
+    {
+      "tag": "宇宙",
+      "avgResults": 8000,
+      "subCategories": [
+        "极光星空",
+        "太空宇宙"
+      ]
+    },
+    {
+      "tag": "建筑",
+      "avgResults": 8000,
+      "subCategories": [
+        "现代建筑",
+        "古典建筑"
+      ]
+    },
+    {
+      "tag": "动漫",
+      "avgResults": 8000,
+      "subCategories": [
+        "动漫壁纸",
+        "吉卜力风格"
+      ]
+    },
+    {
+      "tag": "海洋",
+      "avgResults": 8000,
+      "subCategories": [
+        "热带海滩"
+      ]
+    },
+    {
+      "tag": "花卉",
+      "avgResults": 8000,
+      "subCategories": [
+        "樱花花海"
+      ]
+    },
+    {
+      "tag": "美食",
+      "avgResults": 8000,
+      "subCategories": [
+        "美食摄影"
+      ]
+    },
+    {
+      "tag": "科技",
+      "avgResults": 8000,
+      "subCategories": [
+        "4K科技"
+      ]
+    },
+    {
+      "tag": "汽车",
+      "avgResults": 8000,
+      "subCategories": [
+        "汽车超跑"
+      ]
+    }
+  ]
+}
