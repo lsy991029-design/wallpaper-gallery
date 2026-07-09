@@ -4,9 +4,10 @@ import type { Wallpaper } from '../../types/wallpaper'
 
 interface WallpaperCardProps {
   wallpaper: Wallpaper
+  healingMode?: boolean
 }
 
-export default function WallpaperCard({ wallpaper }: WallpaperCardProps) {
+export default function WallpaperCard({ wallpaper, healingMode = false }: WallpaperCardProps) {
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -33,6 +34,8 @@ export default function WallpaperCard({ wallpaper }: WallpaperCardProps) {
             onError={handleError}
             className={`h-full w-full object-cover transition-opacity duration-300 ${
               loaded ? 'opacity-100' : 'opacity-0'
+            } ${
+              healingMode ? 'healing-filter' : ''
             }`}
           />
         ) : (

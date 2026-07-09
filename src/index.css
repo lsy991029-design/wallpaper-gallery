@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 治愈模式 CSS 滤镜 */
+.healing-filter {
+  filter:
+    brightness(1.08)
+    contrast(0.92)
+    saturate(0.75)
+    sepia(0.15)
+    hue-rotate(-5deg);
+  transition: filter 0.4s ease;
+}
+
+/* 治愈系分类自动应用柔和滤镜 */
+.healing-category {
+  filter:
+    brightness(1.08)
+    contrast(0.92)
+    saturate(0.75)
+    sepia(0.15)
+    hue-rotate(-5deg);
+}

@@ -7,6 +7,7 @@ interface InfiniteGalleryProps {
   visibleCount: number
   sentinelRef: React.RefObject<HTMLDivElement | null>
   isLoading: boolean
+  healingMode?: boolean
 }
 
 export default function InfiniteGallery({
@@ -14,6 +15,7 @@ export default function InfiniteGallery({
   visibleCount,
   sentinelRef,
   isLoading,
+  healingMode = false,
 }: InfiniteGalleryProps) {
   const visible = wallpapers.slice(0, visibleCount)
 
@@ -34,7 +36,7 @@ export default function InfiniteGallery({
     <>
       <GalleryGrid>
         {visible.map((wp) => (
-          <WallpaperCard key={wp.id} wallpaper={wp} />
+          <WallpaperCard key={wp.id} wallpaper={wp} healingMode={healingMode} />
         ))}
       </GalleryGrid>
 
